@@ -13,7 +13,11 @@ mkdir -p ~/.aws/amazonq/prompts && \
 cd /tmp && \
 git clone --depth 1 https://github.com/firstcommit730/sdd-llm-toolkit.git && \
 cp sdd-llm-toolkit/prompts/*.md ~/.aws/amazonq/prompts/ && \
-cp -r sdd-llm-toolkit/.specify ~/.aws/amazonq/ && \
+if [ ! -d ~/.aws/amazonq/.specify ]; then \
+  cp -r sdd-llm-toolkit/.specify ~/.aws/amazonq/; \
+else \
+  rsync -av --exclude='memory/' sdd-llm-toolkit/.specify/ ~/.aws/amazonq/.specify/; \
+fi && \
 cp -r sdd-llm-toolkit/sdd-toolkit ~/.aws/amazonq/ && \
 rm -rf sdd-llm-toolkit && \
 echo "✅ Amazon Q prompts, .specify directory, and sdd-toolkit installed successfully!"
@@ -24,7 +28,7 @@ echo "✅ Amazon Q prompts, .specify directory, and sdd-toolkit installed succes
 - Creates `~/.aws/amazonq/prompts/` directory
 - Clones the latest toolkit from GitHub
 - Copies all prompt files (`.md`)
-- Copies the complete `.specify/` directory structure
+- Copies the complete `.specify/` directory structure (preserves existing `memory/` folder if present)
 - Copies the `sdd-toolkit/` directory (update scripts and documentation)
 - Cleans up temporary files
 - Provides confirmation message
@@ -41,7 +45,11 @@ mkdir -p .github/prompts && \
 for file in /tmp/sdd-llm-toolkit/prompts/*.md; do \
   cp "$file" .github/prompts/"$(basename "$file" .md).prompt.md"; \
 done && \
-cp -r /tmp/sdd-llm-toolkit/.specify . && \
+if [ ! -d .specify ]; then \
+  cp -r /tmp/sdd-llm-toolkit/.specify .; \
+else \
+  rsync -av --exclude='memory/' /tmp/sdd-llm-toolkit/.specify/ .specify/; \
+fi && \
 cp -r /tmp/sdd-llm-toolkit/sdd-toolkit . && \
 rm -rf /tmp/sdd-llm-toolkit && \
 echo "✅ GitHub Copilot prompts, .specify directory, and sdd-toolkit installed successfully!"
@@ -52,7 +60,7 @@ echo "✅ GitHub Copilot prompts, .specify directory, and sdd-toolkit installed 
 - Clones the latest toolkit from GitHub
 - Creates `.github/prompts/` directory in your project
 - Copies all prompt files with `.prompt.md` extension (Copilot requirement)
-- Copies the complete `.specify/` directory structure to your project
+- Copies the complete `.specify/` directory structure to your project (preserves existing `memory/` folder if present)
 - Copies the `sdd-toolkit/` directory (update scripts and documentation)
 - Cleans up temporary files
 - Provides confirmation message
