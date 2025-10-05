@@ -65,33 +65,20 @@ done
 # Update .specify directory (preserve memory folder)
 echo -e "${YELLOW}📂 Updating .specify directory...${NC}"
 
-# Backup memory folder if it exists
-MEMORY_BACKUP=""
-if [ -d ".specify/memory" ]; then
-    MEMORY_BACKUP=$(mktemp -d)
-    cp -r .specify/memory/* "$MEMORY_BACKUP/" 2>/dev/null || true
-    echo -e "${GREEN}  ✓ Preserved .specify/memory/${NC}"
+# Check if .specify exists and use appropriate method
+if [ ! -d ".specify" ]; then
+    # First time install - copy everything
+    mkdir -p .specify
+    cp -r "$TMP_DIR"/sdd-llm-toolkit/.specify/* .specify/
+    echo -e "${GREEN}  ✓ Installed .specify directory${NC}"
+else
+    # Update existing - preserve memory folder using rsync
+    rsync -av --exclude='memory/' "$TMP_DIR"/sdd-llm-toolkit/.specify/ .specify/
+    echo -e "${GREEN}  ✓ Updated .specify directory (preserved memory folder)${NC}"
 fi
-
-# Remove and update templates and scripts
-rm -rf .specify/templates .specify/scripts 2>/dev/null || true
-mkdir -p .specify
-
-cp -r "$TMP_DIR"/sdd-llm-toolkit/.specify/templates .specify/
-echo -e "${GREEN}  ✓ Updated templates${NC}"
-
-cp -r "$TMP_DIR"/sdd-llm-toolkit/.specify/scripts .specify/
-echo -e "${GREEN}  ✓ Updated scripts${NC}"
 
 # Make scripts executable
 chmod +x .specify/scripts/bash/*.sh 2>/dev/null || true
-
-# Restore memory folder if it was backed up
-if [ -n "$MEMORY_BACKUP" ] && [ -d "$MEMORY_BACKUP" ]; then
-    mkdir -p .specify/memory
-    cp -r "$MEMORY_BACKUP"/* .specify/memory/ 2>/dev/null || true
-    rm -rf "$MEMORY_BACKUP"
-fi
 
 # Create reference directory if it doesn't exist
 mkdir -p .specify/reference

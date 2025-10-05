@@ -54,36 +54,27 @@ done
 # Update .specify directory (preserve memory folder)
 echo -e "${YELLOW}📂 Updating .specify directory...${NC}"
 
-# Backup memory folder if it exists
-MEMORY_BACKUP=""
-if [ -d "$AMAZONQ_DIR/.specify/memory" ]; then
-    MEMORY_BACKUP=$(mktemp -d)
-    cp -r "$AMAZONQ_DIR/.specify/memory"/* "$MEMORY_BACKUP/" 2>/dev/null || true
-    echo -e "${GREEN}  ✓ Preserved .specify/memory/${NC}"
+# Check if .specify exists and use appropriate method
+if [ ! -d "$AMAZONQ_DIR/.specify" ]; then
+    # First time install - copy everything
+    cp -r "$TMP_DIR"/sdd-llm-toolkit/.specify "$AMAZONQ_DIR/"
+    echo -e "${GREEN}  ✓ Installed .specify directory${NC}"
+else
+    # Update existing - preserve memory folder using rsync
+    rsync -av --exclude='memory/' "$TMP_DIR"/sdd-llm-toolkit/.specify/ "$AMAZONQ_DIR/.specify/"
+    echo -e "${GREEN}  ✓ Updated .specify directory (preserved memory folder)${NC}"
 fi
-
-# Remove and update .specify directory
-rm -rf "$AMAZONQ_DIR/.specify" 2>/dev/null || true
-cp -r "$TMP_DIR"/sdd-llm-toolkit/.specify "$AMAZONQ_DIR/"
-echo -e "${GREEN}  ✓ Updated .specify directory${NC}"
 
 # Make scripts executable
 chmod +x "$AMAZONQ_DIR/.specify/scripts/bash"/*.sh 2>/dev/null || true
+
+# Create reference directory if it doesn't exist
+mkdir -p "$AMAZONQ_DIR/.specify/reference"
 
 # Update sdd-toolkit directory
 rm -rf "$AMAZONQ_DIR/sdd-toolkit" 2>/dev/null || true
 cp -r "$TMP_DIR"/sdd-llm-toolkit/sdd-toolkit "$AMAZONQ_DIR/"
 echo -e "${GREEN}  ✓ Updated sdd-toolkit directory${NC}"
-
-# Restore memory folder if it was backed up
-if [ -n "$MEMORY_BACKUP" ] && [ -d "$MEMORY_BACKUP" ]; then
-    mkdir -p "$AMAZONQ_DIR/.specify/memory"
-    cp -r "$MEMORY_BACKUP"/* "$AMAZONQ_DIR/.specify/memory"/ 2>/dev/null || true
-    rm -rf "$MEMORY_BACKUP"
-fi
-
-# Create reference directory if it doesn't exist
-mkdir -p "$AMAZONQ_DIR/.specify/reference"
 
 echo -e "${GREEN}✅ Amazon Q Developer SDD Toolkit updated successfully!${NC}"
 echo ""
