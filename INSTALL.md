@@ -14,12 +14,13 @@ cd /tmp && \
 git clone --depth 1 https://github.com/firstcommit730/sdd-llm-toolkit.git && \
 cp sdd-llm-toolkit/prompts/*.md ~/.aws/amazonq/prompts/ && \
 if [ ! -d ~/.aws/amazonq/.specify ]; then \
-  cp -r sdd-llm-toolkit/.specify ~/.aws/amazonq/; \
+  rsync -av --exclude='memory/constitution.md' sdd-llm-toolkit/.specify/ ~/.aws/amazonq/.specify/; \
 else \
   rsync -av --exclude='memory/' sdd-llm-toolkit/.specify/ ~/.aws/amazonq/.specify/; \
 fi && \
 cp -r sdd-llm-toolkit/sdd-toolkit ~/.aws/amazonq/ && \
 rm -rf sdd-llm-toolkit && \
+cd - && \
 echo "✅ Amazon Q prompts, .specify directory, and sdd-toolkit installed successfully!"
 ```
 
@@ -28,7 +29,7 @@ echo "✅ Amazon Q prompts, .specify directory, and sdd-toolkit installed succes
 - Creates `~/.aws/amazonq/prompts/` directory
 - Clones the latest toolkit from GitHub
 - Copies all prompt files (`.md`)
-- Copies the complete `.specify/` directory structure (preserves existing `memory/` folder on install and update)
+- Copies the complete `.specify/` directory structure (excludes `constitution.md` on first install, preserves existing `memory/` folder on updates)
 - Copies the `sdd-toolkit/` directory (update scripts and documentation)
 - Cleans up temporary files
 - Provides confirmation message
@@ -46,7 +47,7 @@ for file in /tmp/sdd-llm-toolkit/prompts/*.md; do \
   cp "$file" .github/prompts/"$(basename "$file" .md).prompt.md"; \
 done && \
 if [ ! -d .specify ]; then \
-  cp -r /tmp/sdd-llm-toolkit/.specify .; \
+  rsync -av --exclude='memory/constitution.md' /tmp/sdd-llm-toolkit/.specify/ .specify/; \
 else \
   rsync -av --exclude='memory/' /tmp/sdd-llm-toolkit/.specify/ .specify/; \
 fi && \
@@ -60,7 +61,7 @@ echo "✅ GitHub Copilot prompts, .specify directory, and sdd-toolkit installed 
 - Clones the latest toolkit from GitHub
 - Creates `.github/prompts/` directory in your project
 - Copies all prompt files with `.prompt.md` extension (Copilot requirement)
-- Copies the complete `.specify/` directory structure to your project (preserves existing `memory/` folder on install and update)
+- Copies the complete `.specify/` directory structure to your project (excludes `constitution.md` on first install, preserves existing `memory/` folder on updates)
 - Copies the `sdd-toolkit/` directory (update scripts and documentation)
 - Cleans up temporary files
 - Provides confirmation message
@@ -77,7 +78,7 @@ Install prompts globally for Amazon Q Developer:
 mkdir -p ~/.aws/amazonq/prompts && \
 cp prompts/*.md ~/.aws/amazonq/prompts/ && \
 if [ ! -d ~/.aws/amazonq/.specify ]; then \
-  cp -r .specify ~/.aws/amazonq/; \
+  rsync -av --exclude='memory/constitution.md' .specify/ ~/.aws/amazonq/.specify/; \
 else \
   rsync -av --exclude='memory/' .specify/ ~/.aws/amazonq/.specify/; \
 fi && \
@@ -85,7 +86,7 @@ cp -r sdd-toolkit ~/.aws/amazonq/ && \
 echo "✅ Amazon Q prompts, .specify directory, and sdd-toolkit installed successfully!"
 ```
 
-**Note:** This command preserves your existing `.specify/memory/` directory (including `constitution.md`) on install and update.
+**Note:** This command excludes `constitution.md` on first install, then preserves your existing `.specify/memory/` directory on updates.
 
 ### GitHub Copilot (Install to Your Project)
 
@@ -98,7 +99,7 @@ for file in "$TOOLKIT_PATH"/prompts/*.md; do \
   cp "$file" .github/prompts/"$(basename "$file" .md).prompt.md"; \
 done && \
 if [ ! -d .specify ]; then \
-  cp -r "$TOOLKIT_PATH/.specify" .; \
+  rsync -av --exclude='memory/constitution.md' "$TOOLKIT_PATH/.specify/" .specify/; \
 else \
   rsync -av --exclude='memory/' "$TOOLKIT_PATH/.specify/" .specify/; \
 fi && \
@@ -110,7 +111,7 @@ echo "✅ GitHub Copilot prompts, .specify directory, and sdd-toolkit installed 
 
 - Replace `/path/to/sdd-llm-toolkit` with the actual path to the cloned toolkit repository
 - This installs prompts to `.github/prompts/` (Copilot requirement), `.specify/`, and `sdd-toolkit/` in your project
-- Preserves existing `.specify/memory/` directory (including `constitution.md`) on install and update
+- Excludes `constitution.md` on first install, preserves existing `.specify/memory/` directory on updates
 - Does NOT copy the `prompts/` folder to your project
 
 ## Manual Install
@@ -123,14 +124,14 @@ Run from the toolkit repository directory:
 mkdir -p ~/.aws/amazonq/prompts
 cp prompts/*.md ~/.aws/amazonq/prompts/
 if [ ! -d ~/.aws/amazonq/.specify ]; then
-  cp -r .specify ~/.aws/amazonq/
+  rsync -av --exclude='memory/constitution.md' .specify/ ~/.aws/amazonq/.specify/
 else
   rsync -av --exclude='memory/' .specify/ ~/.aws/amazonq/.specify/
 fi
 cp -r sdd-toolkit ~/.aws/amazonq/
 ```
 
-**Note:** Preserves existing `.specify/memory/` directory (including `constitution.md`) on install and update.
+**Note:** Excludes `constitution.md` on first install, preserves existing `.specify/memory/` directory on updates.
 
 **For GitHub Copilot:**
 
@@ -143,7 +144,7 @@ for file in "$TOOLKIT_PATH"/prompts/*.md; do \
   cp "$file" .github/prompts/"$(basename "$file" .md).prompt.md"; \
 done && \
 if [ ! -d .specify ]; then \
-  cp -r "$TOOLKIT_PATH/.specify" .; \
+  rsync -av --exclude='memory/constitution.md' "$TOOLKIT_PATH/.specify/" .specify/; \
 else \
   rsync -av --exclude='memory/' "$TOOLKIT_PATH/.specify/" .specify/; \
 fi && \
@@ -151,7 +152,7 @@ cp -r "$TOOLKIT_PATH/sdd-toolkit" . && \
 echo "✅ GitHub Copilot prompts, .specify directory, and sdd-toolkit installed successfully!"
 ```
 
-**Note:** Preserves existing `.specify/memory/` directory (including `constitution.md`) on install and update. Does NOT copy the `prompts/` folder to your project - only installs to `.github/prompts/`, `.specify/`, and `sdd-toolkit/`.
+**Note:** Excludes `constitution.md` on first install, preserves existing `.specify/memory/` directory on updates. Does NOT copy the `prompts/` folder to your project - only installs to `.github/prompts/`, `.specify/`, and `sdd-toolkit/`.
 
 ## Verify Installation
 
@@ -295,17 +296,18 @@ git clone --depth 1 https://github.com/firstcommit730/sdd-llm-toolkit.git && \
 rm -rf ~/.aws/amazonq/prompts/*.md && \
 cp sdd-llm-toolkit/prompts/*.md ~/.aws/amazonq/prompts/ && \
 if [ ! -d ~/.aws/amazonq/.specify ]; then \
-  cp -r sdd-llm-toolkit/.specify ~/.aws/amazonq/; \
+  rsync -av --exclude='memory/constitution.md' sdd-llm-toolkit/.specify/ ~/.aws/amazonq/.specify/; \
 else \
   rsync -av --exclude='memory/' sdd-llm-toolkit/.specify/ ~/.aws/amazonq/.specify/; \
 fi && \
 rm -rf ~/.aws/amazonq/sdd-toolkit && \
 cp -r sdd-llm-toolkit/sdd-toolkit ~/.aws/amazonq/ && \
 rm -rf sdd-llm-toolkit && \
+cd - && \
 echo "✅ Amazon Q prompts, .specify directory, and sdd-toolkit updated successfully!"
 ```
 
-**Note:** This command preserves your existing `.specify/memory/` directory (including `constitution.md`) on install and update.
+**Note:** This command excludes `constitution.md` on first install, then preserves your existing `.specify/memory/` directory on updates.
 
 #### GitHub Copilot (Project-Local)
 

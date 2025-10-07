@@ -67,10 +67,9 @@ echo -e "${YELLOW}📂 Updating .specify directory...${NC}"
 
 # Check if .specify exists and use appropriate method
 if [ ! -d ".specify" ]; then
-    # First time install - copy everything
-    mkdir -p .specify
-    cp -r "$TMP_DIR"/sdd-llm-toolkit/.specify/* .specify/
-    echo -e "${GREEN}  ✓ Installed .specify directory${NC}"
+    # First time install - copy everything except constitution.md
+    rsync -av --exclude='memory/constitution.md' "$TMP_DIR"/sdd-llm-toolkit/.specify/ .specify/
+    echo -e "${GREEN}  ✓ Installed .specify directory (excluded constitution.md)${NC}"
 else
     # Update existing - preserve memory folder using rsync
     rsync -av --exclude='memory/' "$TMP_DIR"/sdd-llm-toolkit/.specify/ .specify/

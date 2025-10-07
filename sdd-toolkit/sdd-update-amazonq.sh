@@ -56,9 +56,9 @@ echo -e "${YELLOW}📂 Updating .specify directory...${NC}"
 
 # Check if .specify exists and use appropriate method
 if [ ! -d "$AMAZONQ_DIR/.specify" ]; then
-    # First time install - copy everything
-    cp -r "$TMP_DIR"/sdd-llm-toolkit/.specify "$AMAZONQ_DIR/"
-    echo -e "${GREEN}  ✓ Installed .specify directory${NC}"
+    # First time install - copy everything except constitution.md
+    rsync -av --exclude='memory/constitution.md' "$TMP_DIR"/sdd-llm-toolkit/.specify/ "$AMAZONQ_DIR/.specify/"
+    echo -e "${GREEN}  ✓ Installed .specify directory (excluded constitution.md)${NC}"
 else
     # Update existing - preserve memory folder using rsync
     rsync -av --exclude='memory/' "$TMP_DIR"/sdd-llm-toolkit/.specify/ "$AMAZONQ_DIR/.specify/"
