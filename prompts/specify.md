@@ -13,11 +13,49 @@ Create or update the feature specification from a natural language feature descr
 
 The user will provide a feature description and optionally a reference folder for additional context.
 
+### Validation Requirements
+
+**CRITICAL**: All feature descriptions MUST include a valid branch type prefix. If the user provides a description without a proper prefix, immediately stop processing and return an error message.
+
 ### Steps
 
-0. **Create a branch name**: Before running the script, create a concise, descriptive name suitable for a git branch that captures the essence of the feature. This name should be clear and meaningful, preserving key technical terms while being suitable for branch naming conventions. The script will automatically process this into a valid git branch name limited to 65 characters.
+0. **Validate Branch Type Prefix**: Before proceeding, ensure the feature description includes a valid branch type prefix according to the constitution.md Branch Naming standards:
 
-1. Run the script `.specify/scripts/bash/create-new-feature.sh --json "<branch_description>"` from repo root and parse its JSON output for BRANCH_NAME and SPEC_FILE. All file paths must be absolute.
+   - **REQUIRED**: The description MUST start with one of: `feat/`, `fix/`, `chore/`, `refactor/`, `test/`, `docs/`, `hotfix/`, `maintenance/`
+   - **STOP AND ERROR**: If no valid prefix is provided, immediately stop processing and inform the user they must specify a branch type prefix
+   - **Constitution Reference**: Per `.specify/memory/constitution.md` § 1 "Branching and Repository Standards", all branches must follow the `type/short-description` pattern
+
+   **Valid Examples**:
+
+   - ✅ `feat/user-authentication-system`
+   - ✅ `fix/payment-timeout-issue`
+   - ✅ `docs/api-documentation-update`
+   - ❌ `user-authentication-system` (missing type prefix)
+   - ❌ `new-feature/authentication` (invalid type)
+
+   **ERROR HANDLING**: If the user's description does not start with a valid type prefix, respond with:
+
+   ```
+   ERROR: Invalid branch type prefix provided.
+
+   The feature description must start with a valid branch type according to the constitution.md Branch Naming standards.
+
+   Required format: type/description
+   Valid types: feat, fix, chore, refactor, test, docs, hotfix, maintenance
+
+   Examples:
+   - feat/add-user-authentication
+   - fix/resolve-payment-timeout
+   - docs/update-api-documentation
+
+   Please provide your feature description with a proper type prefix.
+   ```
+
+   Do not proceed with any further steps.
+
+0.1. **Create a branch name**: After validating the prefix, create a concise, descriptive name suitable for a git branch that captures the essence of the feature. This name should be clear and meaningful, preserving key technical terms and the required type prefix while being suitable for branch naming conventions. The script will automatically process this into a valid git branch name limited to 65 characters.
+
+1. Run the script `.specify/scripts/bash/create-new-feature.sh --json "<branch_description_with_prefix>"` from repo root and parse its JSON output for BRANCH_NAME and SPEC_FILE. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
    **Branch Name Generation**: The script automatically generates a git branch name from your description by:
