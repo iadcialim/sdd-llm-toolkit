@@ -199,7 +199,7 @@ This toolkit requires the following directory structure:
 ```
 .specify/
 ├── memory/              # Constitution and audit logs
-├── reference/           # Domain context files (injected via @specify-reference)
+├── reference/           # Domain context files (used via @specify -ref <folder>)
 ├── scripts/bash/        # Helper scripts
 └── templates/           # Markdown templates for prompts
 ```

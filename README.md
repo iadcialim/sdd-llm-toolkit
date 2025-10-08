@@ -12,7 +12,7 @@ Consistent, auditable, specification-first workflow across different AI assistan
 
 - Multi-vendor prompt distribution (Amazon Q + GitHub Copilot) with identical semantics
 - Unified command-style verbs (`@specify`, `@plan`, `@tasks`, `@implement`, etc.)
-- Reference folder mechanism (`@specify-reference`) to inject structured domain context across the entire workflow
+- Reference folder mechanism (`@specify -ref <folder>`) to inject structured domain context across the entire workflow
 - Slightly reworded title & docs to emphasize portability and neutrality
 - Installation instructions show parallel vendor setup instead of single-platform GitHub Actions usage
 - Keeps attribution, intent, and constitutional methodology from the original project
@@ -34,7 +34,12 @@ Inspired by and originally derived from the excellent upstream project: [github/
    cd /tmp && \
    git clone --depth 1 https://github.com/firstcommit730/sdd-llm-toolkit.git && \
    cp sdd-llm-toolkit/prompts/*.md ~/.aws/amazonq/prompts/ && \
-   cp -r sdd-llm-toolkit/.specify ~/.aws/amazonq/ && \
+   if [ ! -d ~/.aws/amazonq/.specify ]; then \
+     rsync -av --exclude='memory/constitution.md' sdd-llm-toolkit/.specify/ ~/.aws/amazonq/.specify/; \
+   else \
+     rsync -av --exclude='memory/' sdd-llm-toolkit/.specify/ ~/.aws/amazonq/.specify/; \
+   fi && \
+   cp -r sdd-llm-toolkit/sdd-toolkit ~/.aws/amazonq/ && \
    rm -rf sdd-llm-toolkit
    ```
 
@@ -48,7 +53,12 @@ Inspired by and originally derived from the excellent upstream project: [github/
    for file in /tmp/sdd-llm-toolkit/prompts/*.md; do \
      cp "$file" .github/prompts/"$(basename "$file" .md).prompt.md"; \
    done && \
-   cp -r /tmp/sdd-llm-toolkit/.specify . && \
+   if [ ! -d .specify ]; then \
+     rsync -av --exclude='memory/constitution.md' /tmp/sdd-llm-toolkit/.specify/ .specify/; \
+   else \
+     rsync -av --exclude='memory/' /tmp/sdd-llm-toolkit/.specify/ .specify/; \
+   fi && \
+   cp -r /tmp/sdd-llm-toolkit/sdd-toolkit . && \
    rm -rf /tmp/sdd-llm-toolkit
    ```
 
