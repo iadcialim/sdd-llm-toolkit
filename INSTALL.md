@@ -174,7 +174,38 @@ You should see the following prompts: `audit.md`, `constitution.md`, `drift.md`,
 
 ## Quick Test
 
-Type `@constitution` in your IDE to test the installation.
+### Step 1: Set up Constitution Template
+
+First, copy the constitution template to your memory folder and customize it for your project:
+
+```bash
+# Copy the constitution template to memory folder
+cp .specify/templates/constitution-template.md .specify/memory/constitution.md
+```
+
+### Step 2: Review Example Constitutions
+
+Check the examples folder for sample constitutions to guide your customization:
+
+```bash
+# View available constitution examples
+ls examples/
+cat examples/constitution-react.md  # Example for React projects
+```
+
+**Expected behavior:**
+
+- The prompt should load successfully
+- It should reference your `.specify/memory/constitution.md` file
+- You can now customize the constitution template with your project-specific standards
+
+### Step 4: Customize Your Constitution
+
+Edit `.specify/memory/constitution.md` to match your project needs:
+
+- Update project name and technology stack
+- Customize coding standards and architectural principles
+- Reference the examples folder for inspiration and best practices
 
 ## Available Prompts
 
