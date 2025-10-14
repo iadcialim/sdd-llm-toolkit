@@ -50,7 +50,7 @@ else
       SECTIONS=("core" "testing" "architecture" "optional" "branching")
       ;;
     infra)
-      SECTIONS=("core" "operations" "security" "observability" "branching")
+      SECTIONS=("core" "security" "observability" "branching")
       ;;
     core)
       SECTIONS=("core" "branching")
@@ -59,7 +59,7 @@ else
       SECTIONS=("testing" "branching")
       ;;
     full)
-      SECTIONS=("core" "testing" "security" "observability" "architecture" "operations" "optional" "branching")
+      SECTIONS=("core" "testing" "security" "observability" "architecture" "optional" "branching")
       ;;
     *)
       echo "Error: Unknown preset '$INPUT'" >&2
